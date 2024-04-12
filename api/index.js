@@ -5,7 +5,7 @@ const crypto = require("crypto");
 
 const nodemailer = require("nodemailer")
 const app = express();
-const port = 3000;
+const port = 4000;
 const cors = require("cors");
 
 const http = require("http").createServer(app);
@@ -23,13 +23,13 @@ const Chat = require("./models/message");
 
 
 
-mongoose.connect("mongodb+srv://jilkapadia:jilkapadia@cluster0.xadetvt.mongodb.net/").then(()=>{
+mongoose.connect("mongodb+srv://jilkapadia:jilkapadia@cluster0.xadetvt.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0").then(()=>{
     console.log("Connected to MongDb")
 }).catch((error)=>{
 console.log("Error connecting to MongoDb")
 })
 app.listen(port, () => {
-    console.log("Server is running on 3000");
+    console.log("Server is running on 4000");
   });
 
 //endpoint to register a user to backend
@@ -472,8 +472,8 @@ io.on("connection", (socket) => {
 });
 
 
-http.listen(7000, () => {
-  console.log("Socket.IO server running on port 7000");
+http.listen(8000, () => {
+  console.log("Socket.IO server running on port 8000");
 });
 
 //endpoint to get mesgs from backend 
