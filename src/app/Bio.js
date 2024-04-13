@@ -26,9 +26,15 @@ export default function Bio() {
         fetchUser();
     }, []);
 
+    useEffect(() => {
+        if (userId) {
+            fetchUserDescription();
+        }
+    }, [userId]);
+
     const fetchUserDescription = async () => {
         try {
-            const response = await axios.get("http://192.168.1.2:4000/users/${userId}");
+            const response = await axios.get(`http://192.168.1.2:4000/users/${userId}`);
             const user = response.data;
             setDescription(user?.user?.description);
             setSelectedKeywords(user.user?.keywords);
@@ -41,16 +47,10 @@ export default function Bio() {
         }
     };
 
-    useEffect(() => {
-        if (userId) {
-            fetchUserDescription();
-        }
-    }, [userId]);
-
     const updateUserDescription = async () => {
         try {
             const response = await axios.put(
-                "http:// 192.168.1.2:4000/users/${userId}/description",
+                `http://192.168.1.2:4000/users/${userId}/description`,
                 { description: description }
             );
 
@@ -66,7 +66,7 @@ export default function Bio() {
 
     const handleAddImage = async () => {
         try {
-            const response = await axios.post("http:// 192.168.1.2:4000/users/${userId}/project-images", {
+            const response = await axios.post(`http://192.168.1.2:4000/users/${userId}/project-images`, {
                 imageUrl: imageUrl
             });
 
@@ -78,21 +78,121 @@ export default function Bio() {
         }
     };
 
-   
+    // const handleToggleKeywords = (keywordName) => {
+    //     const updatedKeywords = selectedKeywords.includes(keywordName)
+    //         ? selectedKeywords.filter((keyword) => keyword !== keywordName)
+    //         : [...selectedKeywords, keywordName];
+    //     setSelectedKeywords(updatedKeywords);
+    //     localStorage.setItem('selectedKeywords', JSON.stringify(updatedKeywords));
+    // };
 
-    const handleToggleKeywords = (keywordName) => {
-        const updatedKeywords = selectedKeywords.includes(keywordName)
-            ? selectedKeywords.filter((keyword) => keyword !== keywordName)
-            : [...selectedKeywords, keywordName];
-        setSelectedKeywords(updatedKeywords);
-    };
+    // const handleOption = (optionName) => {
+    //     const updatedOptions = lookingOptions.includes(optionName)
+    //         ? lookingOptions.filter((option) => option !== optionName)
+    //         : [...lookingOptions, optionName];
+    //     setLookingOptions(updatedOptions);
+    //     localStorage.setItem('lookingOptions', JSON.stringify(updatedOptions));
+    // };
 
-    const handleOption = (optionName) => {
-        const updatedOptions = lookingOptions.includes(optionName)
-            ? lookingOptions.filter((option) => option !== optionName)
-            : [...lookingOptions, optionName];
-        setLookingOptions(updatedOptions);
-    };
+    
+const handleToggleKeywords= (keywords) =>{
+  // console.log("keywords",keywords)
+  if(selectedKeywords.includes(keywords)){
+    removeKeywords(keywords)
+  }else{
+    addKeywords(keywords)
+  }
+
+}
+const handleOption= (lookingFor)=>{
+  if(lookingOptions.includes(lookingFor)){
+    removeLookingFor(lookingFor)
+  }
+  else{
+    addLookingFor(lookingFor)
+  }
+}
+const addLookingFor= async (lookingFor)=>{
+  try {
+    const response = await axios.put(
+      `http://192.168.1.2:4000/users/${userId}/looking-for`,
+      {
+        lookingFor: lookingFor,
+      }
+    );
+
+    console.log(response.data);
+
+    if (response.status == 200) {
+      setLookingOptions([...lookingOptions, lookingFor]);
+    }
+
+    
+  } catch (error) {
+    console.log("Error adding looking for",error)
+  }
+}
+
+const removeLookingFor = async (lookingFor) => {
+  try {
+    const response = await axios.put(
+      `http://192.168.1.2:4000/users/${userId}/looking-for/remove`,
+      {
+        lookingFor: lookingFor,
+      }
+    );
+
+    console.log(response.data); // Log the response for confirmation
+
+    // Handle success or update your app state accordingly
+    if (response.status === 200) {
+      setLookingOptions(lookingOptions.filter((item) => item !== lookingFor));
+    }
+  } catch (error) {
+    console.error("Error removing looking for:", error);
+    // Handle error scenarios
+  }
+};
+const addKeywords= async (keywords)=>{
+  try {
+    const response = await axios.put(
+      `http://192.168.1.2:4000/users/${userId}/keywords/add`,
+      {
+        keywords: keywords,
+      }
+    );
+
+    console.log(response.data);
+
+    if (response.status == 200) {
+      setSelectedKeywords([...selectedKeywords, keywords]);
+    }
+    
+  } catch (error) {
+    console.log("Error adding keywords",error)
+    
+  }
+}
+const removeKeywords = async (keywords)=>{
+try {
+  const response = await axios.put(
+    `http://192.168.1.2:4000/users/${userId}/keywords/remove`,
+    {
+      keywords: keywords,
+    }
+  );
+
+  console.log(response.data);
+
+  if (response.status == 200) {
+    setSelectedKeywords(selectedKeywords.filter((item) => item !== keywords));
+  }
+  
+} catch (error) {
+  console.log("Error removing keywords",error)
+  
+}
+}
 
     const handleLogout = async () => {
         try {
@@ -102,6 +202,19 @@ export default function Bio() {
             console.log("Error", error);
         }
     };
+
+    useEffect(() => {
+        const storedSelectedKeywords = localStorage.getItem('selectedKeywords');
+        if (storedSelectedKeywords) {
+            setSelectedKeywords(JSON.parse(storedSelectedKeywords));
+        }
+
+        const storedLookingOptions = localStorage.getItem('lookingOptions');
+        if (storedLookingOptions) {
+            setLookingOptions(JSON.parse(storedLookingOptions));
+        }
+    }, []);
+
     const keywords = [
       {
         id: "0",

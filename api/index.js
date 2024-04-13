@@ -9,11 +9,14 @@ const port = 4000;
 const cors = require("cors");
 
 const http = require("http").createServer(app);
-const io = require("socket.io")(http);
+const io = require("socket.io")(http, {
+  cors: {
+    origin: "http://localhost:3000", // Change this to your frontend URL
+    methods: ["GET", "POST"]
+  }
+});
 
-app.use(cors({
-  origin: '*'
-}));
+app.use(cors());
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());

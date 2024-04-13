@@ -1,10 +1,15 @@
-import React from 'react'
-import Navbar from './Navbar'
+import React from 'react';
 
-export default function Home() {
+import Desktop from '../components/Desktop';
+
+const Home = () => {
   return (
     <div>
-      <Navbar/>
-      Home</div>
-  )
-}
+     
+      <Desktop />
+      
+    </div>
+  );
+};
+
+export default Home;
